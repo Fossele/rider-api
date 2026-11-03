@@ -5,6 +5,7 @@ import com.fossele.rider.entity.Ride;
 import com.fossele.rider.entity.RideStatus;
 import com.fossele.rider.repository.GeoLocationRepository;
 import com.fossele.rider.repository.RideRepository;
+import com.fossele.rider.response.RideMetricsResponse;
 import com.fossele.rider.response.VehicleLocationResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.UUID;
 
 
 @Service
@@ -119,5 +120,42 @@ public class GeoLocationService {
         removeDriver(assignedDriver);
 
         return savedRide;
+    }
+
+
+    public RideMetricsResponse getRideMetrics(UUID rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + rideId));
+
+        // Optional: Calculate distance using a basic Haversine formula or a utility method
+        double distanceKm = calculateDistance(
+                ride.getPickupLatitude(), ride.getPickupLongitude(),
+                ride.getDropoffLatitude(), ride.getDropoffLongitude()
+        );
+
+        return RideMetricsResponse.builder()
+                .rideId(ride.getId())
+                .riderId(ride.getRiderId())
+                .assignedDriverName(ride.getAssignedDriverName())
+                .status(ride.getStatus())
+                .pickupLongitude(ride.getPickupLongitude())
+                .pickupLatitude(ride.getPickupLatitude())
+                .dropoffLongitude(ride.getDropoffLongitude())
+                .dropoffLatitude(ride.getDropoffLatitude())
+                .estimatedDistance(String.format("%.2f km", distanceKm))
+                .build();
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radius of the earth in km
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+
+        // The earth is a sphere so we minimize errors using this formula
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // convert to km
     }
 }
