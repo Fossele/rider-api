@@ -31,4 +31,16 @@ public class RideController {
         RideMetricsResponse metrics = geoLocationService.getRideMetrics(rideId);
         return ResponseEntity.ok(metrics);
     }
+
+    @PostMapping("/{rideId}/complete")
+    public ResponseEntity<Ride> completeRide(@PathVariable UUID rideId) {
+        Ride completedRide = geoLocationService.completeRide(rideId);
+        return ResponseEntity.ok(completedRide);
+    }
+
+    @PostMapping("/{rideId}/cancel")
+    public ResponseEntity<Ride> cancelRide(@PathVariable UUID rideId) {
+        Ride cancelledRide = geoLocationService.cancelRide(rideId);
+        return ResponseEntity.ok(cancelledRide);
+    }
 }

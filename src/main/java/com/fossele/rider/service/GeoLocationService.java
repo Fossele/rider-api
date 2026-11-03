@@ -158,4 +158,55 @@ public class GeoLocationService {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // convert to km
     }
+
+    public Ride completeRide(UUID rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + rideId));
+
+        if (ride.getStatus() == RideStatus.COMPLETED || ride.getStatus() == RideStatus.CANCELLED) {
+            throw new IllegalStateException("Ride is already finalized.");
+        }
+
+        // 1. Update ride status
+        ride.setStatus(RideStatus.COMPLETED);
+        Ride savedRide = rideRepository.save(ride);
+
+        // 2. Make driver available again in Redis using their last known DB coordinates
+        restoreDriverAvailability(ride.getAssignedDriverName());
+
+        return savedRide;
+    }
+
+    public Ride cancelRide(UUID rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new RuntimeException("Ride not found with ID: " + rideId));
+
+        if (ride.getStatus() == RideStatus.COMPLETED || ride.getStatus() == RideStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot cancel an already finalized ride.");
+        }
+
+        // 1. Update ride status
+        ride.setStatus(RideStatus.CANCELLED);
+        Ride savedRide = rideRepository.save(ride);
+
+        // 2. Restore driver availability so they can take other rides
+        restoreDriverAvailability(ride.getAssignedDriverName());
+
+        return savedRide;
+    }
+
+
+    private void restoreDriverAvailability(String driverName) {
+        if (driverName == null) return;
+
+        // Fetch their last known position from PostgreSQL
+        geoLocationRepository.findByVehicleName(driverName).ifPresent(location -> {
+            Point point = new Point(location.getLongitude(), location.getLatitude());
+            // Re-add to Redis geospatial index
+            geoOperations.add(VEHICLE_LOCATION_KEY, point, driverName);
+        });
+    }
+
+
+
 }
