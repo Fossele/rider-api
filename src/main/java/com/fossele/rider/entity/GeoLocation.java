@@ -16,7 +16,7 @@ public class GeoLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private int longitude;
-    private int latitude;
+    private double longitude;
+    private double latitude;
     private String vehicleName;
 }

@@ -1,9 +1,7 @@
 package com.fossele.rider.response;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.geo.Point;
 
 import java.util.List;
@@ -11,6 +9,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
 public class VehicleLocationResponse {
 
     private String vehicleName;
@@ -18,4 +18,5 @@ public class VehicleLocationResponse {
 
     private Point point;
     private List<String> hash;
+
 }

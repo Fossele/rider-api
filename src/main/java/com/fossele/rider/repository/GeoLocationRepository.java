@@ -5,8 +5,10 @@ import com.fossele.rider.entity.GeoLocation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface GeoLocationRepository extends JpaRepository<GeoLocation, UUID> {
+    Optional<GeoLocation> findByVehicleName(String vehicleName);
 }

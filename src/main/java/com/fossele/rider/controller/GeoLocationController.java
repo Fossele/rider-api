@@ -5,11 +5,10 @@ import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 
 import java.util.List;
-
-import static com.fossele.rider.service.GeoLocationService.vehicleLocation;
-
-
+/*
+import static com.fossele.rider.service.GeoLocationService.
 public class GeoLocationController {
 
 
 }
+*/
