@@ -26,6 +26,7 @@ public class RideController {
         return ResponseEntity.ok(assignedRide);
     }
 
+
     @GetMapping("/{rideId}/metrics")
     public ResponseEntity<RideMetricsResponse> getRideStatusAndMetrics(@PathVariable UUID rideId) {
         RideMetricsResponse metrics = geoLocationService.getRideMetrics(rideId);

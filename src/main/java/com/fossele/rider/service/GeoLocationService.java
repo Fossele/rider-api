@@ -8,11 +8,12 @@ import com.fossele.rider.repository.RideRepository;
 import com.fossele.rider.response.RideMetricsResponse;
 import com.fossele.rider.response.VehicleLocationResponse;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.geo.*;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.GeoOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -23,13 +24,17 @@ import java.util.UUID;
 
 
 @Service
-@RequiredArgsConstructor
 public class GeoLocationService {
 
     private final GeoOperations<String, String> geoOperations;
     private final GeoLocationRepository geoLocationRepository;
     private final RideRepository rideRepository;
 
+    public GeoLocationService(RedisTemplate<String, String> redisTemplate, GeoLocationRepository geoLocationRepository, RideRepository rideRepository) {
+        this.geoOperations = redisTemplate.opsForGeo();
+        this.geoLocationRepository = geoLocationRepository;
+        this.rideRepository = rideRepository;
+    }
     public static final String VEHICLE_LOCATION_KEY = "vehicle_location";
 
     public GeoLocation add(@Valid GeoLocation geoLocation){

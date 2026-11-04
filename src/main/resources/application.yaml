@@ -3,23 +3,34 @@ server:
 
 spring:
   application:
-    name: rider
+    name: rider-service
 
+  # Database Configuration (PostgreSQL + PostGIS)
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/geodb}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    password: ${SPRING_DATASOURCE_PASSWORD:your_password}
     driver-class-name: org.postgresql.Driver
 
+  # JPA / Hibernate Settings
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
 
+  # Redis Configuration (For GEO API and ephemeral driver state)
   data:
     redis:
       host: ${SPRING_REDIS_HOST:localhost}
       port: ${SPRING_REDIS_PORT:6379}
+
+# Application Logging
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    com.fossele.rider: DEBUG

@@ -13,10 +13,9 @@ public class DriverWebSocketController {
 
     private final GeoLocationService geoLocationService;
 
-
     @MessageMapping("/driver.ping")
     public void handleDriverPing(@Payload DriverPingRequest request) {
-        // Update Redis spatial index instantly
+
         geoLocationService.updateDriverLocation(
                 request.getVehicleName(),
                 request.getLongitude(),
