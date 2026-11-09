@@ -15,7 +15,7 @@ public class Ride {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String riderId;
+    private  UUID riderId;
     private String assignedDriverName;
 
     private double pickupLongitude;
@@ -28,5 +28,4 @@ public class Ride {
 
     @Enumerated(EnumType.STRING)
     private RideStatus status; // REQUESTED, ACCEPTED, COMPLETED, CANCELLED
-
 }

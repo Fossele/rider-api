@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 public class RideMetricsResponse {
     private UUID rideId;
-    private String riderId;
+    private UUID riderId;
     private String assignedDriverName;
     private RideStatus status;
     private double pickupLongitude;

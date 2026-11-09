@@ -9,6 +9,7 @@ import com.fossele.rider.response.RideMetricsResponse;
 import com.fossele.rider.response.VehicleLocationResponse;
 import jakarta.validation.Valid;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.*;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -24,6 +25,7 @@ import java.util.UUID;
 
 
 @Service
+@Slf4j
 public class GeoLocationService {
 
     private final GeoOperations<String, String> geoOperations;
@@ -39,6 +41,7 @@ public class GeoLocationService {
 
     public GeoLocation add(@Valid GeoLocation geoLocation){
         Point point = new Point(geoLocation.getLatitude(), geoLocation.getLongitude());
+        log.info("driver with id {} added", geoLocation.getId());
         geoOperations.add(VEHICLE_LOCATION_KEY, point, geoLocation.getVehicleName());
         return geoLocationRepository.save(geoLocation);
     }
@@ -98,7 +101,7 @@ public class GeoLocationService {
         return vehicleLocationResponses;
     }
 
-    public Ride createRideRequest(String riderId, double pickupLongitude, double pickupLatitude) {
+    public Ride createRideRequest(UUID riderId, double pickupLongitude, double pickupLatitude) {
 
         List<VehicleLocationResponse> nearbyDrivers = findNearestVehicles(pickupLongitude, pickupLatitude, 5.0);
 
